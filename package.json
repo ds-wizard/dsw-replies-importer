@@ -1,0 +1,33 @@
+{
+  "name": "dsw-replies-importer",
+  "version": "0.1.0",
+  "description": "DSW Importer for replies in JSON exported from DSW",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ds-wizard/dsw-replies-importer.git"
+  },
+  "keywords": [
+    "import",
+    "replies",
+    "questionnaire"
+  ],
+  "author": "Marek Suchánek",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ds-wizard/dsw-replies-importer/issues"
+  },
+  "homepage": "https://github.com/ds-wizard/dsw-replies-importer#readme",
+  "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "@ds-wizard/importer-sdk": "^0.1.3"
+  }
+}

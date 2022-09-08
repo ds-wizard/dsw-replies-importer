@@ -1,0 +1,19 @@
+{
+  "id": "dsw:replies-importer:0.1.0",
+  "importerId": "replies-importer",
+  "organizationId": "dsw",
+  "version": "0.1.0",
+  "name": "DSW Replies Importer",
+  "description": "Import from replies in JSON exported from DSW",
+  "license": "Apache-2.0",
+  "metamodelVersion": 1,
+  "allowedPackages": [
+    {
+      "orgId": null,
+      "kmId": null,
+      "minVersion": null,
+      "maxVersion": null
+    }
+  ],
+  "url": "..."
+}
