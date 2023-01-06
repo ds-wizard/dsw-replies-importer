@@ -55,12 +55,13 @@ export default class RepliesImporter {
         const reply = extractReply(data, path)
         if (reply !== undefined) {
             const integrationReply = reply[KEY_VALUE][KEY_VALUE]
-            const integration = data[KEY_KM][KEY_ENTITIES]['integrations'][question['integrationUuid']]
-            if (integrationReply[KEY_TYPE] === '' && integration !== undefined) {
-                const url = integration['itemUrl'].replace('${id}', integrationReply[KEY_ID])
-                this.importer.setReply(newPath, url)
+            const replyValue = integrationReply[KEY_VALUE]
+            const replyType = integrationReply[KEY_TYPE]
+            if (replyType === 'IntegrationType') {
+                const replyId = integrationReply[KEY_ID]
+                this.importer.setIntegrationReply(newPath, replyValue, replyId)
             } else {
-                this.importer.setReply(newPath, integrationReply[KEY_VALUE])
+                this.importer.setReply(newPath, replyValue)
             }
         }
     }
