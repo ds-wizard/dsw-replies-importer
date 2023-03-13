@@ -4,7 +4,7 @@ const KEY_REPLIES = 'questionnaireReplies'
 const KEY_VALUE = 'value'
 const KEY_TYPE = 'type'
 const KEY_ID = 'id'
-const KEY_VERSION = 'templateMetamodelVersion'
+const KEYS_VERSION = ['templateMetamodelVersion', 'documentTemplateMetamodelVersion']
 
 function stringifyPath(path) {
     return path.join(".")
@@ -12,6 +12,15 @@ function stringifyPath(path) {
 
 function extractReply(data, path) {
     return data[KEY_REPLIES][stringifyPath(path)]
+}
+
+function extractKey(data, keys) {
+    for (let i = 0; i < keys.length; i++) {
+        if (data[keys[i]]) {
+            return data[keys[i]]
+        }
+    }
+    return undefined
 }
 
 export default class RepliesImporter {
@@ -125,8 +134,8 @@ export default class RepliesImporter {
 
     checkSupported(data) {
         try {
-            const metamodelVersion = data[KEY_VERSION]
-            if (4 <= metamodelVersion && metamodelVersion <= 10) {
+            const metamodelVersion = extractKey(data, KEYS_VERSION)
+            if (4 <= metamodelVersion && metamodelVersion <= 11) {
                 return true
             }
             this.error = `Unsupported metamodel version: ${metamodelVersion}`
