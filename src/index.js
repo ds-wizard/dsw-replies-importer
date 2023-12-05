@@ -1,8 +1,8 @@
-import DSWImporter from '@ds-wizard/importer-sdk'
+import dsw from '@ds-wizard/integration-sdk'
 import RepliesImporter from './importer'
 
 function runImporter() {
-    const importer = new DSWImporter()
+    const importer = new dsw.Importer()
 
     importer
         .init()
