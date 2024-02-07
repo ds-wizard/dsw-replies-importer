@@ -1,10 +1,10 @@
 INSERT INTO public.questionnaire_importer (id, name, organization_id, importer_id, version, metamodel_version, description, readme, license, allowed_packages, url, enabled, app_uuid, created_at, updated_at)
 VALUES (
-  'dsw:replies-importer:0.1.0',
+  'dsw:replies-importer:0.3.0',
   'DSW Replies Importer',
   'dsw',
   'replies-importer',
-  '0.1.0',
+  '0.3.0',
   1,
   'Import from replies in JSON exported from DSW',
   '# DSW Replies Importer\n\n*Import from replies in JSON exported from DSW*\n\nSupported template metamodel version: >=4,<11',

@@ -135,7 +135,7 @@ export default class RepliesImporter {
     checkSupported(data) {
         try {
             const metamodelVersion = extractKey(data, KEYS_VERSION)
-            if (4 <= metamodelVersion && metamodelVersion <= 11) {
+            if (4 <= metamodelVersion && metamodelVersion <= 13) {
                 return true
             }
             this.error = `Unsupported metamodel version: ${metamodelVersion}`
