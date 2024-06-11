@@ -78,7 +78,7 @@ export default class RepliesImporter {
     importQuestionOptions(path, newPath, data, question) {
         const reply = extractReply(data, path)
         if (reply !== undefined) {
-            this.importer.setReply(path, reply[KEY_VALUE][KEY_VALUE])
+            this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
         }
         question['answerUuids'].forEach((answerUuid) => {
             this.importAnswer(path, newPath, data, answerUuid)
