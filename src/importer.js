@@ -1,17 +1,11 @@
-const KEY_KM = 'knowledgeModel'
 const KEY_ENTITIES = 'entities'
-const KEY_REPLIES = 'questionnaireReplies'
 const KEY_VALUE = 'value'
 const KEY_TYPE = 'type'
 const KEY_ID = 'id'
-const KEYS_VERSION = ['templateMetamodelVersion', 'documentTemplateMetamodelVersion']
+const KEYS_VERSION = ['metamodelVersion', 'templateMetamodelVersion', 'documentTemplateMetamodelVersion']
 
 function stringifyPath(path) {
     return path.join(".")
-}
-
-function extractReply(data, path) {
-    return data[KEY_REPLIES][stringifyPath(path)]
 }
 
 function extractKey(data, keys) {
@@ -28,114 +22,156 @@ export default class RepliesImporter {
     constructor(importer) {
         this.importer = importer
         this.error = null
+        this.replies = {}
+        this.km = {}
+        this.itemUuids = new Map();
+    }
+
+    extractReply(path) {
+        return this.replies[stringifyPath(path)]
     }
     
-    importAnswer(path, newPath, data, answerUuid) {
-        const answer = data[KEY_KM][KEY_ENTITIES]['answers'][answerUuid]
+    importAnswer(phase, path, newPath, answerUuid) {
+        const answer = this.km[KEY_ENTITIES]['answers'][answerUuid]
         if (answer === undefined) {
             return
         }
         answer['followUpUuids'].forEach((questionUuid) => {
-            this.importQuestion([...path, answerUuid], [...newPath, answerUuid], data, questionUuid)
+            this.importQuestion(phase, [...path, answerUuid], [...newPath, answerUuid], questionUuid)
         })
     }
 
-    importQuestionList(path, newPath, data, question) {
-        const reply = extractReply(data, path)
+    importQuestionList(phase, path, newPath, question) {
+        const reply = this.extractReply(path)
         if (reply !== undefined) {
             const items = reply[KEY_VALUE][KEY_VALUE]
             items.forEach((itemUuid) => {
-                const newItemUuid = this.importer.addItem(newPath)
+                if (phase === 1) {
+                    const createdItemUuid = this.importer.addItem(newPath)
+                    this.itemUuids.set(itemUuid, createdItemUuid)
+                }
+
+                const newItemUuid = this.itemUuids.get(itemUuid)
                 question['itemTemplateQuestionUuids'].forEach((questionUuid) => {
-                    this.importQuestion([...path, itemUuid], [...newPath, newItemUuid], data, questionUuid)
+                    this.importQuestion(phase, [...path, itemUuid], [...newPath, newItemUuid], questionUuid)
                 })
             })
         }
     }
 
-    importQuestionValue(path, newPath, data, question) {
-        const reply = extractReply(data, path)
-        if (reply !== undefined) {
-            this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
-        }
-    }
-
-    importQuestionIntegration(path, newPath, data, question) {
-        const reply = extractReply(data, path)
-        if (reply !== undefined) {
-            const integrationReply = reply[KEY_VALUE][KEY_VALUE]
-            const replyValue = integrationReply[KEY_VALUE]
-            const replyType = integrationReply[KEY_TYPE]
-            if (replyType === 'IntegrationType') {
-                const replyId = integrationReply[KEY_ID]
-                this.importer.setIntegrationReply(newPath, replyValue, replyId)
-            } else {
-                this.importer.setReply(newPath, replyValue)
+    importQuestionValue(phase, path, newPath, question) {
+        if (phase === 1) {
+            const reply = this.extractReply(path)
+            if (reply !== undefined) {
+                this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
             }
         }
     }
 
-    importQuestionOptions(path, newPath, data, question) {
-        const reply = extractReply(data, path)
-        if (reply !== undefined) {
-            this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
+    importQuestionIntegration(phase, path, newPath, question) {
+        if (phase === 1) {
+            const reply = this.extractReply(path)
+            if (reply !== undefined) {
+                const integrationReply = reply[KEY_VALUE][KEY_VALUE]
+                const replyValue = integrationReply[KEY_VALUE]
+                const replyType = integrationReply[KEY_TYPE]
+                if (replyType === 'IntegrationType') {
+                    const replyId = integrationReply[KEY_ID]
+                    this.importer.setIntegrationReply(newPath, replyValue, replyId)
+                } else {
+                    this.importer.setReply(newPath, replyValue)
+                }
+            }
+        }
+    }
+
+    importQuestionOptions(phase, path, newPath, question) {
+        if (phase === 1) {
+            const reply = this.extractReply(path)
+            if (reply !== undefined) {
+                this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
+            }
         }
         question['answerUuids'].forEach((answerUuid) => {
-            this.importAnswer(path, newPath, data, answerUuid)
+            this.importAnswer(phase, path, newPath, answerUuid)
         })
     }
 
-    importQuestionMultiChoice(path, newPath, data, question) {
-        const reply = extractReply(data, path)
-        if (reply !== undefined) {
-            this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
+    importQuestionMultiChoice(phase, path, newPath, question) {
+        if (phase === 1) {
+            const reply = this.extractReply(path)
+            if (reply !== undefined) {
+                this.importer.setReply(newPath, reply[KEY_VALUE][KEY_VALUE])
+            }
         }
     }
 
-    importQuestion(path, newPath, data, questionUuid) {
-        const question = data[KEY_KM][KEY_ENTITIES]['questions'][questionUuid]
+    importQuestionItemSelect(phase, path, newPath, question) {
+        if (phase === 2) {
+            const reply = this.extractReply(path)
+            if (reply !== undefined) {
+                const itemUuid = reply[KEY_VALUE][KEY_VALUE]
+                const newItemUuid = this.itemUuids.get(itemUuid)
+                this.importer.setItemSelectReply(newPath, newItemUuid)
+            }
+        }
+    }
+
+    importQuestion(phase, path, newPath, questionUuid) {
+        const question = this.km[KEY_ENTITIES]['questions'][questionUuid]
         if (question === undefined) {
             return
         }
         switch (question['questionType']) {
             case 'OptionsQuestion':
-                this.importQuestionOptions([...path, questionUuid], [...newPath, questionUuid], data, question)
+                this.importQuestionOptions(phase, [...path, questionUuid], [...newPath, questionUuid], question)
                 break
             case 'ValueQuestion':
-                this.importQuestionValue([...path, questionUuid], [...newPath, questionUuid], data, question)
+                this.importQuestionValue(phase, [...path, questionUuid], [...newPath, questionUuid], question)
                 break
             case 'ListQuestion':
-                this.importQuestionList([...path, questionUuid], [...newPath, questionUuid], data, question)
+                this.importQuestionList(phase, [...path, questionUuid], [...newPath, questionUuid], question)
                 break
             case 'IntegrationQuestion':
-                this.importQuestionIntegration([...path, questionUuid], [...newPath, questionUuid], data, question)
+                this.importQuestionIntegration(phase, [...path, questionUuid], [...newPath, questionUuid], question)
                 break
             case 'MultiChoiceQuestion':
-                this.importQuestionMultiChoice([...path, questionUuid], [...newPath, questionUuid], data, question)
+                this.importQuestionMultiChoice(phase, [...path, questionUuid], [...newPath, questionUuid], question)
+                break
+            case 'ItemSelectQuestion':
+                this.importQuestionItemSelect(phase, [...path, questionUuid], [...newPath, questionUuid], question)
                 break
         }
     }
 
-    importChapter(data, chapterUuid) {
-        const chapter = data[KEY_KM][KEY_ENTITIES]['chapters'][chapterUuid]
+    importChapter(phase, chapterUuid) {
+        const chapter = this.km[KEY_ENTITIES]['chapters'][chapterUuid]
         if (chapter === undefined) {
             return
         }
         chapter['questionUuids'].forEach((questionUuid) => {
-            this.importQuestion([chapterUuid], [chapterUuid], data, questionUuid)
+            this.importQuestion(phase, [chapterUuid], [chapterUuid], questionUuid)
         })
     }
 
-    importProject(data) {
-        data[KEY_KM]['chapterUuids'].forEach((chapterUuid) => {
-            this.importChapter(data, chapterUuid)
+    importProject(phase) {
+        this.km['chapterUuids'].forEach((chapterUuid) => {
+            this.importChapter(phase, chapterUuid)
         })
     }
 
-    checkSupported(data) {
+    loadData(data) {
         try {
             const metamodelVersion = extractKey(data, KEYS_VERSION)
-            if (4 <= metamodelVersion && metamodelVersion <= 13) {
+            if (4 <= metamodelVersion && metamodelVersion <= 14) {
+                if (metamodelVersion >= 14) {
+                    this.km = data['knowledgeModel']
+                    this.replies = data['questionnaire']['replies']
+                } else {
+                    this.km = data['knowledgeModel']
+                    this.replies = data['questionnaireReplies']
+                }
+
                 return true
             }
             this.error = `Unsupported metamodel version: ${metamodelVersion}`
@@ -146,10 +182,10 @@ export default class RepliesImporter {
     }
 
     import(data) {
-        if (!this.checkSupported(data)) {
+        if (!this.loadData(data)) {
             throw 'Unsupported data provided.'
         }
-        this.importProject(data)
+        this.importProject(1)  // Phase 1: import all and create items
+        this.importProject(2)  // Phase 2: import item select (new item UUIDs prepared)
     }
-
 }

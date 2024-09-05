@@ -4,13 +4,18 @@
 
 ## Changelog
 
+### 0.5.0
+
+- Updated max supported metamodel version (14)
+- Added support for item select question
+
 ### 0.4.0
 
 - Updated and fixed import of nested questions
 
 ### 0.3.0
 
-- Updated max supported metamodel version
+- Updated max supported metamodel version (13)
 
 ### 0.2.0
 
