@@ -4,6 +4,11 @@
 
 ## Changelog
 
+### 0.6.0
+
+- Updated max supported metamodel version (15)
+- Updated Bootstrap CSS/JS
+
 ### 0.5.0
 
 - Updated max supported metamodel version (14)

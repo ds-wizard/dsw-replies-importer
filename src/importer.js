@@ -163,7 +163,7 @@ export default class RepliesImporter {
     loadData(data) {
         try {
             const metamodelVersion = extractKey(data, KEYS_VERSION)
-            if (4 <= metamodelVersion && metamodelVersion <= 14) {
+            if (4 <= metamodelVersion && metamodelVersion <= 15) {
                 if (metamodelVersion >= 14) {
                     this.km = data['knowledgeModel']
                     this.replies = data['questionnaire']['replies']
