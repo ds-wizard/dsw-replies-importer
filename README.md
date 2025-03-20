@@ -4,6 +4,10 @@
 
 ## Changelog
 
+### 0.7.0
+
+- Updated max supported metamodel version (16)
+
 ### 0.6.0
 
 - Updated max supported metamodel version (15)
