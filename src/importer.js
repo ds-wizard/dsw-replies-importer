@@ -2,6 +2,7 @@ const KEY_ENTITIES = 'entities'
 const KEY_VALUE = 'value'
 const KEY_TYPE = 'type'
 const KEY_ID = 'id'
+const KEY_RAW = 'raw'
 const KEYS_VERSION = ['metamodelVersion', 'templateMetamodelVersion', 'documentTemplateMetamodelVersion']
 
 function stringifyPath(path) {
@@ -76,8 +77,11 @@ export default class RepliesImporter {
                 const replyValue = integrationReply[KEY_VALUE]
                 const replyType = integrationReply[KEY_TYPE]
                 if (replyType === 'IntegrationType') {
+                    const replyRaw = integrationReply[KEY_RAW]
+                    this.importer.setIntegrationReply(newPath, replyValue, replyRaw)
+                } else if (replyType === 'IntegrationLegacyType') {
                     const replyId = integrationReply[KEY_ID]
-                    this.importer.setIntegrationReply(newPath, replyValue, replyId)
+                    this.importer.setIntegrationLegacyReply(newPath, replyValue, replyId)
                 } else {
                     this.importer.setReply(newPath, replyValue)
                 }
@@ -163,7 +167,7 @@ export default class RepliesImporter {
     loadData(data) {
         try {
             const metamodelVersion = extractKey(data, KEYS_VERSION)
-            if (4 <= metamodelVersion && metamodelVersion <= 16) {
+            if (4 <= metamodelVersion && metamodelVersion <= 17) {
                 if (metamodelVersion >= 14) {
                     this.km = data['knowledgeModel']
                     this.replies = data['questionnaire']['replies']

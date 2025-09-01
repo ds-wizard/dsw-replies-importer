@@ -1,6 +1,6 @@
 {
   "name": "dsw-replies-importer",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "DSW Importer for replies in JSON exported from DSW",
   "private": true,
   "scripts": {
@@ -28,6 +28,6 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@ds-wizard/integration-sdk": "^1.1.0"
+    "@ds-wizard/integration-sdk": "^2.0.0"
   }
 }

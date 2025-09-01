@@ -4,6 +4,11 @@
 
 ## Changelog
 
+### 0.8.0
+
+- Updated max supported metamodel version (17)
+- Added support for the new integration question
+
 ### 0.7.0
 
 - Updated max supported metamodel version (16)
