@@ -1,6 +1,6 @@
 {
   "name": "dsw-replies-importer",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "DSW Importer for replies in JSON exported from DSW",
   "private": true,
   "scripts": {
