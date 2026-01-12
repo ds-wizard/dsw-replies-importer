@@ -26,10 +26,10 @@ jobs:
 
     - name: '[publish] Prepare ZIP'
       run: |
-        zip -j madmp-importer-${{ github.event.release.tag_name }}.zip dist/*
+        zip -j replies-importer-${{ github.event.release.tag_name }}.zip dist/*
     
     - name: '[publish] Upload release assets'
       uses: shogo82148/actions-upload-release-asset@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: madmp-importer-${{ github.event.release.tag_name }}.zip
+        asset_path: replies-importer-${{ github.event.release.tag_name }}.zip
