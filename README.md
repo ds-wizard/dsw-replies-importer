@@ -13,6 +13,10 @@ Once deployed, you need to add it to your DSW instance database (see `importer.s
 
 ## Changelog
 
+### 0.9.2
+
+- Fix importing integration reply from older projects
+
 ### 0.9.1
 
 - Fix checking document template metamodel version

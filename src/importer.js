@@ -21,6 +21,7 @@ function extractKey(data, keys) {
 export default class RepliesImporter {
 
     constructor(importer) {
+        this.metamodelVersion = null
         this.importer = importer
         this.error = null
         this.replies = {}
@@ -76,10 +77,10 @@ export default class RepliesImporter {
                 const integrationReply = reply[KEY_VALUE][KEY_VALUE]
                 const replyValue = integrationReply[KEY_VALUE]
                 const replyType = integrationReply[KEY_TYPE]
-                if (replyType === 'IntegrationType') {
+                if (replyType === 'IntegrationType' && this.metamodelVersion >= 17) {
                     const replyRaw = integrationReply[KEY_RAW]
                     this.importer.setIntegrationReply(newPath, replyValue, replyRaw)
-                } else if (replyType === 'IntegrationLegacyType') {
+                } else if (replyType === 'IntegrationLegacyType' || (replyType === 'IntegrationType' && this.metamodelVersion < 17)) {
                     const replyId = integrationReply[KEY_ID]
                     this.importer.setIntegrationLegacyReply(newPath, replyValue, replyId)
                 } else {
@@ -167,6 +168,7 @@ export default class RepliesImporter {
     loadData(data) {
         try {
             const metamodelVersion = parseFloat(extractKey(data, KEYS_VERSION))
+            this.metamodelVersion = metamodelVersion
             if (4 <= metamodelVersion && metamodelVersion < 18.0) {
                 if (metamodelVersion >= 14) {
                     this.km = data['knowledgeModel']
