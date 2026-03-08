@@ -2,6 +2,9 @@
 
 *Import from replies in JSON exported from DSW*
 
+> [!CAUTION]
+> Project Importers has been **deprecated** starting DSW v4.28 and you should use [replies-importer-plugin](https://github.com/ds-wizard/replies-importer-plugin) instead.
+
 # Deployment
 
 You can deploy this importer in two ways:
